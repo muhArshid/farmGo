@@ -182,7 +182,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
               height: 30,
             ),
             button(
-              label: 'SUBMIT',
+              label: 'SUBMIT ',
               height: size.height * 0.07,
               width: size.width,
               onTap: () {
