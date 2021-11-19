@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "173393172254",
+    "firebase_url": "https://gothic-list-230105.firebaseio.com",
+    "project_id": "gothic-list-230105",
+    "storage_bucket": "gothic-list-230105.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173393172254:android:699d3be79f1ea63ac99b0f",
+        "android_client_info": {
+          "package_name": "com.myFarm.farmapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "173393172254-6fi3gmq7qj7lb2nlo536mubncv0nssvu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDM3IPfwCjnwVvbQP8AYReuhdJcth_w7rk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173393172254-6fi3gmq7qj7lb2nlo536mubncv0nssvu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
