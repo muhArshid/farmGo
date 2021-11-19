@@ -190,7 +190,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
                 //   authController.login(emailController.text.trim(),
                 //       passwordController.text.trim());
                 //   // Get.offAll(() => MainHomeHolder());
-                // }
+                // }git
               },
             )
           ]),
