@@ -1,6 +1,11 @@
+import 'package:farmapp/constants/controllers.dart';
+import 'package:farmapp/controller/service_condroler.dart';
+import 'package:farmapp/model/core/category_item.dart';
+import 'package:farmapp/model/core/user.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
 import 'package:farmapp/views/screens/sevicese/add_new_item.dart';
+import 'package:farmapp/views/screens/sevicese/widgets/single_item.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +13,8 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 class SerchScreen extends StatefulWidget {
-  const SerchScreen({Key? key}) : super(key: key);
+  final MainCategoryItemModel? category;
+  const SerchScreen({Key? key, this.category}) : super(key: key);
 
   @override
   _SerchScreenState createState() => _SerchScreenState();
@@ -39,7 +45,9 @@ class _SerchScreenState extends State<SerchScreen> {
             children: [
               InkWell(
                 onTap: () {
-                  Get.to(() => AddNewScreen());
+                  Get.to(() => AddNewScreen(
+                        category: widget.category,
+                      ));
                 },
                 child: Container(
                   height: 35,
@@ -113,60 +121,15 @@ class _SerchScreenState extends State<SerchScreen> {
             SizedBox(
               height: 5.h,
             ),
-            Expanded(
-                child: ListView.builder(
-                    itemCount: 4,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        child: InkWell(
-                          onTap: () {},
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.blueAccent),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                                color: AppColorCode.pureWhite),
-                            height: 7.h,
-                            width: 90.w,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'ID 4896@45',
-                                      style: AppFontMain(
-                                        color: AppColorCode.SubHeaderColor,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Lorem',
-                                      style: AppFontMain(
-                                        color: AppColorCode.SubHeaderColor,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Hen',
-                                      style: AppFontMain(
-                                        color: AppColorCode.SubHeaderColor,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ]),
-                            ),
-                          ),
-                        ),
-                      );
-                    })),
+            // Expanded(
+            //     child: Obx(() => ListView.builder(
+            //         itemCount:
+            //             userController.userModel.value.mainCategory?.length,
+            //         itemBuilder: (context, index) {
+            //           return SingleItemWidget(
+            //               category: userController
+            //                   .userModel.value.subCategory![index]);
+            //         }))),
           ]))
     ])));
   }

@@ -75,20 +75,37 @@ class AuthController extends GetxController {
     }
   }
 
-  void register(String email, password) async {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  get user => _auth.currentUser;
+
+  //SIGN UP METHOD
+  Future signUp({String? email, String? password}) async {
     try {
-      await auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-    } catch (firebaseAuthException) {}
+      await _auth.createUserWithEmailAndPassword(
+        email: email!,
+        password: password!,
+      );
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return e.message;
+    }
   }
 
-  void login(String email, password) async {
+  //SIGN IN METHOD
+  Future signIn({String? emaildata, String? passworddata}) async {
     try {
-      await auth.signInWithEmailAndPassword(email: email, password: password);
-    } catch (firebaseAuthException) {}
+      await _auth.signInWithEmailAndPassword(
+          email: emaildata!, password: passworddata!);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      return e.message;
+    }
   }
 
-  void signOut() async {
-    await auth.signOut();
+  //SIGN OUT METHOD
+  Future signOut() async {
+    await _auth.signOut();
+
+    print('signout');
   }
 }

@@ -1,10 +1,14 @@
 import 'package:farmapp/constants.dart';
+import 'package:farmapp/constants/controllers.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
 import 'package:farmapp/utils/AssetConstants.dart';
+import 'package:farmapp/views/screens/auth/sign_up_screen.dart';
+import 'package:farmapp/views/screens/home/main_home_holder.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -74,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   buildtextFormLogin(
                     label: 'Email',
+                    controller: userController.email,
                     validator: (val) {
                       if (val!.isEmpty) {
                         return 'Enter Email ID';
@@ -92,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 25),
                   buildtextFormLogin(
+                    controller: userController.password,
                     label: 'Password',
                     suffixIcon: InkWell(
                       onTap: () {
@@ -155,14 +161,37 @@ class _LoginScreenState extends State<LoginScreen> {
               width: size.width,
               onTap: () {
                 if (_formKey.currentState!.validate()) {
-                  authController.login(emailController.text.trim(),
-                      passwordController.text.trim());
-                  // Get.offAll(() => MainHomeHolder());
+                  userController.signIn();
+                  // authController
+                  //     .signIn(
+                  //         emaildata: emailController.text,
+                  //         passworddata: passwordController.text)
+                  //     .then((result) {
+                  //   if (result == null) {
+                  //     Get.to(() => MainHomeHolder());
+                  //   } else {
+                  //     Fluttertoast.showToast(
+                  //         msg: result,
+                  //         backgroundColor: AppColorCode.brandColor);
+                  //   }
+                  // });
                 }
               },
             ),
           ),
-          // SizedBox(height: 50),
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: button(
+              label: 'SingUP',
+              height: size.height * 0.07,
+              width: size.width,
+              onTap: () {
+                Get.to(() => SignUpScreen());
+              },
+            ),
+          ),
+
           // ElevatedButton(
           //   style: ElevatedButton.styleFrom(
           //     primary: Colors.red,

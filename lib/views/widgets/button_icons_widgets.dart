@@ -35,17 +35,17 @@ Widget button(
   );
 }
 
-Widget buildtextForm({
-  String? label,
-  String? hintText,
-  bool obscureText = false,
-  Widget? suffixIcon,
-  TextInputType keyboardType = TextInputType.text,
-  int minLines = 1,
-  int maxLines = 1,
-  TextEditingController? controller,
-  String? Function(String?)? validator,
-}) {
+Widget buildtextForm(
+    {String? label,
+    String? hintText,
+    bool obscureText = false,
+    Widget? suffixIcon,
+    TextInputType keyboardType = TextInputType.text,
+    int minLines = 1,
+    int maxLines = 1,
+    TextEditingController? controller,
+    String? Function(String?)? validator,
+    Function()? onTap}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -63,6 +63,7 @@ Widget buildtextForm({
       Container(
         // height: 55,
         child: TextFormField(
+          onTap: onTap,
           controller: controller,
           validator: validator,
           minLines: minLines,

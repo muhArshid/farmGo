@@ -1,6 +1,11 @@
+import 'package:farmapp/constants/controllers.dart';
+import 'package:farmapp/model/core/category_item.dart';
+import 'package:farmapp/model/core/user.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
 import 'package:farmapp/views/screens/sevicese/serch_item.dart';
+import 'package:farmapp/views/screens/sevicese/widgets/single_category.dart';
+import 'package:farmapp/views/screens/sevicese/widgets/single_item.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +14,8 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 class AddFarmScreen extends StatefulWidget {
-  const AddFarmScreen({Key? key}) : super(key: key);
+  final MainCategoryItemModel? category;
+  const AddFarmScreen({Key? key, this.category}) : super(key: key);
 
   @override
   _AddFarmScreenState createState() => _AddFarmScreenState();
@@ -31,9 +37,13 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 100.w,
+//width: 100.w,
                 height: 50.h,
                 decoration: BoxDecoration(
+                  image: new DecorationImage(
+                    image: new NetworkImage(widget.category!.image!),
+                    fit: BoxFit.cover,
+                  ),
                   border: Border(
                       bottom: BorderSide(
                           color: Color.fromRGBO(0, 83, 9, 1), width: 0.0)),
@@ -70,7 +80,9 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
                     ),
                     InkWell(
                       onTap: () {
-                        Get.to(() => SerchScreen());
+                        Get.to(() => SerchScreen(
+                              category: widget.category,
+                            ));
                       },
                       child: Row(
                         children: [
@@ -95,60 +107,36 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
               SizedBox(
                 height: 5.h,
               ),
-              Expanded(
-                  child: ListView.builder(
-                      itemCount: 4,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          child: InkWell(
-                            onTap: () {},
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.blueAccent),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  color: AppColorCode.pureWhite),
-                              height: 7.h,
-                              width: 90.w,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'ID 4896@45',
-                                        style: AppFontMain(
-                                          color: AppColorCode.SubHeaderColor,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Lorem',
-                                        style: AppFontMain(
-                                          color: AppColorCode.SubHeaderColor,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Hen',
-                                        style: AppFontMain(
-                                          color: AppColorCode.SubHeaderColor,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ]),
-                              ),
-                            ),
-                          ),
-                        );
-                      })),
+              //         ListView(
+              //   controller: scrollController,
+              //   padding: EdgeInsets.all(12),
+              //   children: [
+              //     ...widget.usersProvider.users
+              //         .map((user) => ListTile(
+              //               title: Text(user.name),
+              //               leading: CircleAvatar(
+              //                 backgroundImage: NetworkImage(user.imageUrl),
+              //               ),
+              //             ))
+              //         .toList(),
+              //     if (widget.usersProvider.hasNext)
+              //       Center(
+              //         child: GestureDetector(
+              //           onTap: widget.usersProvider.fetchNextUsers,
+              //           child: Container(
+              //             height: 25,
+              //             width: 25,
+              //             child: CircularProgressIndicator(),
+              //           ),
+              //         ),
+              //       ),
+              //   ],
+              // ),
+              Column(
+                children: serviceController.users
+                    .map((cartItem) => SingleItemWidget(category: cartItem))
+                    .toList(),
+              )
             ],
           ),
         ),
@@ -168,9 +156,9 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Hen Farm',
+                    widget.category!.name!,
                     style: AppFontMain(
-                      color: AppColorCode.pureWhite,
+                      color: AppColorCode.brandColor,
                       fontSize: 25,
                       fontWeight: FontWeight.w700,
                     ),
@@ -178,7 +166,7 @@ class _AddFarmScreenState extends State<AddFarmScreen> {
                   Text(
                     'Tottal-120',
                     style: AppFontMain(
-                      color: AppColorCode.pureWhite,
+                      color: AppColorCode.brandColor,
                       fontSize: 20,
                       fontWeight: FontWeight.w400,
                     ),

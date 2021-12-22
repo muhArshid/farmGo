@@ -1,8 +1,10 @@
 import 'package:farmapp/constants.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AssetConstants.dart';
-import 'package:farmapp/views/screens/home/home_screen.dart';
+import 'package:farmapp/views/screens/home/explore.dart';
 import 'package:farmapp/views/screens/commen_screen.dart';
+import 'package:farmapp/views/screens/home/profile.dart';
+import 'package:farmapp/views/screens/sevicese/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -33,11 +35,11 @@ class _MainHomeHolderState extends State<MainHomeHolder> {
   Widget callpage(int currentIndex) {
     switch (currentIndex) {
       case 0:
-        return HomeScreen();
+        return ProfileScreen();
       case 1:
         return HomeScreen();
       case 2:
-        return TextSrceen();
+        return ExploreScreen();
 
       default:
         return TextSrceen();

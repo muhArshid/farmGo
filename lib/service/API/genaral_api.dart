@@ -1,24 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// import 'package:get/get.dart';
+class FirebaseApi {
+  // static Future uploadUsers() async {
+  //   final currentUsers = await getUsers(1);
 
-// class GeneralAPI {
-//   static Future<InitialData?> getInitialData(dynamic request) async {
-//     try {
-//       InitialData? initialDataResponse;
-//       HttpRequestHandler requestHandler = HttpRequestHandler();
+  //   if (currentUsers.docs.isEmpty) {
+  //     final refUsers = FirebaseFirestore.instance.collection('users');
 
-//       var isSuccess = await requestHandler.sendTokenServerRequest(
-//           HttpConstants.initialData, request);
-//       var resBody = requestHandler.responsebody;
+  //     for (final user in List.of(users)) {
+  //       await refUsers.add(user);
+  //     }
+  //   }
+  // }
 
-//       if (isSuccess) {
-//         initialDataResponse = InitialData.fromJson(resBody);
-//       }
-//       return initialDataResponse;
-//     } catch (e) {
-//       throw e;
-//     }
-//   }
+  static Future<QuerySnapshot> getUsers(
+    int limit, {
+    DocumentSnapshot? startAfter,
+  }) async {
+    final refUsers =
+        FirebaseFirestore.instance.collection('items').limit(limit);
 
-  
-// }
+    if (startAfter == null) {
+      return refUsers.get();
+    } else {
+      return refUsers.startAfterDocument(startAfter).get();
+    }
+  }
+}

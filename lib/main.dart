@@ -1,4 +1,9 @@
+import 'package:farmapp/controller/appController.dart';
+import 'package:farmapp/controller/auth_controller.dart';
+import 'package:farmapp/controller/cart_controller.dart';
 import 'package:farmapp/controller/firebaseController.dart';
+import 'package:farmapp/controller/product_controller.dart';
+import 'package:farmapp/controller/service_condroler.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/views/screens/auth/login_screen.dart';
 import 'package:farmapp/views/screens/auth/sign_up_screen.dart';
@@ -13,7 +18,11 @@ import 'package:farmapp/constants.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await firebaseInitialization.then((value) {
-    Get.put(AuthController());
+    Get.put(AppController());
+    Get.put(UserController());
+    Get.put(ProducsController());
+    Get.put(CartController());
+    Get.put(ServiceContoller());
   });
   runApp(MyApp());
 }

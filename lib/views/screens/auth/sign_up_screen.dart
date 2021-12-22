@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farmapp/constants.dart';
+import 'package:farmapp/constants/controllers.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
 import 'package:farmapp/utils/AssetConstants.dart';
@@ -7,6 +9,7 @@ import 'package:farmapp/views/screens/home/main_home_holder.dart';
 import 'package:farmapp/views/screens/home/user.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -26,14 +29,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final fireBase = FirebaseFirestore.instance;
   bool passwordVisible = false;
   bool verifyPasswordVisible = false;
-  create() async {
-    try {
-      await fireBase.collection("Users").doc().set(
-          {"name": name.text, "email": email.text, "password": password.text});
-    } catch (e) {
-      print(e);
-    }
-  }
+  // create() async {
+  //   try {
+  //     await fireBase.collection("Users").doc().set(
+  //         {"name": name.text, "email": email.text, "password": password.text});
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -69,16 +72,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  buildtextForm(
-                    label: 'Name',
-                    controller: name,
-                    validator: (val) {
-                      if (val!.isEmpty) return 'Required';
-                    },
-                  ),
+                  // buildtextForm(
+                  //   label: 'Name',
+                  //   controller: name,
+                  //   validator: (val) {
+                  //     if (val!.isEmpty) return 'Required';
+                  //   },
+                  // ),
                   buildtextForm(
                     label: 'Email',
-                    controller: email,
+                    controller: userController.email,
                     validator: (val) {
                       if (val!.isEmpty) {
                         return 'Enter Email ID';
@@ -92,7 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
                   buildtextForm(
-                    controller: password,
+                    controller: userController.password,
                     label: 'Password',
                     suffixIcon: InkWell(
                       onTap: () {
@@ -119,33 +122,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
-                  buildtextForm(
-                    controller: passwordCheck,
-                    label: 'Verify Password',
-                    suffixIcon: InkWell(
-                      onTap: () {
-                        setState(() {
-                          verifyPasswordVisible = !verifyPasswordVisible;
-                        });
-                      },
-                      child: verifyPasswordVisible
-                          ? Icon(
-                              Icons.visibility_off,
-                              color: AppColorCode.grayMix,
-                            )
-                          : Icon(
-                              Icons.visibility,
-                              color: AppColorCode.grayMix,
-                            ),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) return 'Confirm your Password';
-                      // if (value != newPasswordCt.text)
-                      //   return 'Password must be same as above';
-                      // return null;
-                    },
-                    obscureText: verifyPasswordVisible ? false : true,
-                  ),
+                  // buildtextForm(
+                  //   controller: userController.password,
+                  //   label: 'Verify Password',
+                  //   suffixIcon: InkWell(
+                  //     onTap: () {
+                  //       setState(() {
+                  //         verifyPasswordVisible = !verifyPasswordVisible;
+                  //       });
+                  //     },
+                  //     child: verifyPasswordVisible
+                  //         ? Icon(
+                  //             Icons.visibility_off,
+                  //             color: AppColorCode.grayMix,
+                  //           )
+                  //         : Icon(
+                  //             Icons.visibility,
+                  //             color: AppColorCode.grayMix,
+                  //           ),
+                  //   ),
+                  //   validator: (value) {
+                  //     if (value!.isEmpty) return 'Confirm your Password';
+                  //     // if (value != newPasswordCt.text)
+                  //     //   return 'Password must be same as above';
+                  //     // return null;
+                  //   },
+                  //   obscureText: verifyPasswordVisible ? false : true,
+                  // ),
                 ],
               ),
             ),
@@ -159,21 +162,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               width: size.width,
               onTap: () {
                 if (_formKey.currentState!.validate()) {
-                  create();
+                  // create();
+                  if (_formKey.currentState!.validate()) {
+                    userController.signUp();
+                  }
                 }
-                // Get.offAll(() => UsersScreen());
-              },
-            ),
-          ),
-          SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: button(
-              label: 'users',
-              height: size.height * 0.07,
-              width: size.width,
-              onTap: () {
-                Get.to(UsersScreen());
               },
             ),
           ),

@@ -1,9 +1,11 @@
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
 import 'package:farmapp/utils/AssetConstants.dart';
+import 'package:farmapp/views/screens/auth/login_screen.dart';
 import 'package:farmapp/views/screens/commen_screen.dart';
 import 'package:farmapp/views/screens/home/main_home_holder.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -92,7 +94,11 @@ class _SplashScreenState extends State<SplashScreen> {
                       height: size.height * 0.07,
                       width: size.width * 0.30,
                       onTap: () {
-                        Get.offAll(() => MainHomeHolder());
+                        if (FirebaseAuth.instance.currentUser?.uid == null) {
+                          Get.offAll(() => LoginScreen());
+                        } else {
+                          Get.offAll(() => MainHomeHolder());
+                        }
                       },
                     )
                   ],

@@ -185,3 +185,50 @@ class _TextSrceenState extends State<TextSrceen> {
     ])));
   }
 }
+
+class Texti extends StatefulWidget {
+  const Texti({Key? key}) : super(key: key);
+
+  @override
+  _TextiState createState() => _TextiState();
+}
+
+class _TextiState extends State<Texti> {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+        child: Scaffold(
+            body: Stack(children: [
+      Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        child: appBar(
+          label: '',
+        ),
+      ),
+      Positioned(
+          top: 60,
+          left: 0,
+          right: 10,
+          bottom: 0,
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Members',
+                style: AppFontMain(
+                  color: AppColorCode.headerColor,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+          ]))
+    ])));
+  }
+}

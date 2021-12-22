@@ -10,7 +10,7 @@ const secondaryColor = Color(0xFFDEE4EF);
 const bgColor = Color(0xFFDEE4EF);
 
 const defaultPadding = 16.0;
-AuthController authController = AuthController.instance;
+//AuthController authController = AuthController.instance;
 final Future<FirebaseApp> firebaseInitialization = Firebase.initializeApp();
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
