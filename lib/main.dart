@@ -3,6 +3,7 @@ import 'package:farmapp/controller/auth_controller.dart';
 import 'package:farmapp/controller/cart_controller.dart';
 import 'package:farmapp/controller/firebaseController.dart';
 import 'package:farmapp/controller/product_controller.dart';
+import 'package:farmapp/controller/profile_controller.dart';
 import 'package:farmapp/controller/service_condroler.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/views/screens/auth/login_screen.dart';
@@ -23,6 +24,7 @@ void main() async {
     Get.put(ProducsController());
     Get.put(CartController());
     Get.put(ServiceContoller());
+    Get.put(ProfileContoller());
   });
   runApp(MyApp());
 }

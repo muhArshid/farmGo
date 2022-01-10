@@ -1,9 +1,9 @@
 import 'package:farmapp/constants.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AssetConstants.dart';
-import 'package:farmapp/views/screens/home/explore.dart';
 import 'package:farmapp/views/screens/commen_screen.dart';
-import 'package:farmapp/views/screens/home/profile.dart';
+import 'package:farmapp/views/screens/profile/explore.dart';
+import 'package:farmapp/views/screens/profile/profile.dart';
 import 'package:farmapp/views/screens/sevicese/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

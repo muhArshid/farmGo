@@ -14,11 +14,11 @@ class FirebaseApi {
   // }
 
   static Future<QuerySnapshot> getUsers(
+    String id,
     int limit, {
     DocumentSnapshot? startAfter,
   }) async {
-    final refUsers =
-        FirebaseFirestore.instance.collection('items').limit(limit);
+    final refUsers = FirebaseFirestore.instance.collection('items');
 
     if (startAfter == null) {
       return refUsers.get();

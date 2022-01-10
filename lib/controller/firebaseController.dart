@@ -1,4 +1,5 @@
 import 'package:farmapp/constants.dart';
+import 'package:farmapp/constants/firebase.dart';
 import 'package:farmapp/views/screens/auth/login_screen.dart';
 import 'package:farmapp/views/screens/home/main_home_holder.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -2,8 +2,10 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmapp/constants.dart';
+import 'package:farmapp/constants/firebase.dart';
 import 'package:farmapp/model/core/to_do_modal.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 
 class TodoController extends GetxController {
   Rxn<List<TodoModel>> todoList = Rxn<List<TodoModel>>([]);
@@ -17,11 +19,14 @@ class TodoController extends GetxController {
 
 class FirestoreDb {
   static addTodo(TodoModel todomodel) async {
+    String id = Uuid().v1();
     await firebaseFirestore
         .collection('users')
         .doc(auth.currentUser!.uid)
         .collection('todos')
-        .add({
+        .doc(id)
+        .set({
+      'id': id,
       'content': todomodel.content,
       'createdon': Timestamp.now(),
       'isDone': false,
@@ -35,14 +40,13 @@ class FirestoreDb {
         .collection('todos')
         .snapshots()
         .map((QuerySnapshot querysnapshot) {
-      List<TodoModel> todos = [];
-      List<TodoModel> todoData = <TodoModel>[];
+      List<TodoModel> _todoData = [];
       querysnapshot.docs.forEach((element) {
         print(element.data());
-        todoData.add(TodoModel.fromSnapshot(element));
+        _todoData.add(TodoModel.fromMap(element.data()));
       });
-      print('Total message fetched: ${todoData.length}');
-      return todoData;
+      print('Total message fetched: ${_todoData.length}');
+      return _todoData;
       //
     });
   }

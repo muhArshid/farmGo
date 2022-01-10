@@ -14,7 +14,11 @@ class SingleItemWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          // Get.to(() => AddNewScreen(
+          //             category: widget.category,
+          //           ));
+        },
         child: Container(
           decoration: BoxDecoration(
               border: Border.all(color: Colors.blueAccent),
@@ -36,7 +40,7 @@ class SingleItemWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    category!.name!,
+                    category!.tag_id!,
                     style: AppFontMain(
                       color: AppColorCode.SubHeaderColor,
                       fontSize: 15,
@@ -44,7 +48,7 @@ class SingleItemWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    category!.name!,
+                    category!.item_sub!,
                     style: AppFontMain(
                       color: AppColorCode.SubHeaderColor,
                       fontSize: 15,

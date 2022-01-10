@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmapp/constants/controllers.dart';
 import 'package:farmapp/constants/firebase.dart';
@@ -7,11 +9,14 @@ import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
 import 'package:farmapp/utils/AssetConstants.dart';
 import 'package:farmapp/utils/helper/date_format_helper.dart';
+import 'package:farmapp/utils/helper/image_picker.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
+import 'package:path/path.dart' as path;
 
 class AddNewScreen extends StatefulWidget {
   final MainCategoryItemModel? category;
@@ -22,8 +27,11 @@ class AddNewScreen extends StatefulWidget {
 }
 
 class _AddNewScreenState extends State<AddNewScreen> {
+  final GlobalKey _menuKey = new GlobalKey();
   var setDefaultmainCat = true, setDefaultSubCat = true;
   var mainCat, subCat;
+  String? fileName;
+  File? imageFile;
   final _formKey = GlobalKey<FormState>();
   late DateTime pickedDate;
   Future<void> _selectDateTo(BuildContext context) async {
@@ -69,7 +77,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
         right: 10,
         bottom: 0,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: ListView(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,29 +92,45 @@ class _AddNewScreenState extends State<AddNewScreen> {
                           backgroundColor: AppColorCode.brandColor,
                           radius: 70,
                           child: CircleAvatar(
-                            backgroundImage:
-                                AssetImage(AssetConstant.profiledemy),
+                            backgroundImage: imageFile == null
+                                ? AssetImage(AssetConstant.profiledemy)
+                                : FileImage(imageFile!) as ImageProvider,
                             radius: 60,
                           ),
                         ),
-                        // Positioned(
-                        //     right: 10,
-                        //     bottom: 0,
-                        //     top: 0,
-                        //     child: Container(
-                        //       height: 25,
-                        //       width: 26,
-                        //       decoration: BoxDecoration(
-                        //           color: AppColorCode.brandColor,
-                        //           borderRadius: BorderRadius.circular(40)),
-                        //       child: IconButton(
-                        //         onPressed: () {},
-                        //         icon: const Icon(
-                        //           Icons.add,
-                        //           size: 15,
-                        //         ),
-                        //       ),
-                        //     ))
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColorCode.brandColor,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: PopupMenuButton(
+                              key: _menuKey,
+                              itemBuilder: (_) => <PopupMenuItem<String>>[
+                                new PopupMenuItem<String>(
+                                    child: const Text('Gallery'), value: 'g'),
+                                new PopupMenuItem<String>(
+                                    child: const Text('Camera'), value: 'c'),
+                              ],
+                              onSelected: (val) async {
+                                final picker = ImagePicker();
+                                PickedFile? pickedImage;
+                                pickedImage = await picker.getImage(
+                                    source: val == 'c'
+                                        ? ImageSource.camera
+                                        : ImageSource.gallery,
+                                    maxWidth: 1920);
+
+                                fileName = path.basename(pickedImage!.path);
+                                setState(() {
+                                  imageFile = File(pickedImage!.path);
+                                });
+                              },
+                              child: Icon(Icons.camera_alt_outlined),
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -150,10 +174,10 @@ class _AddNewScreenState extends State<AddNewScreen> {
                               onTap: () {
                                 _selectDateTo(context);
                               },
-                              label: 'Dote Of Birth',
+                              label: 'Date Of Birth',
                               validator: (val) {
                                 if (val!.isEmpty) {
-                                  return 'Enter Email ID';
+                                  return 'Choose Date ';
                                 }
                               },
                             ),
@@ -172,7 +196,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
               label: 'Discription',
               validator: (val) {
                 if (val!.isEmpty) {
-                  return 'Enter Email ID';
+                  return 'Enter Discription';
                 }
               },
             ),
@@ -180,7 +204,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
               height: 20,
             ),
             Text(
-              'Category',
+              'Item Category',
               style: AppFontMain(
                 color: AppColorCode.headerColor,
                 fontSize: 15,
@@ -241,7 +265,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
               height: 10,
             ),
             Text(
-              'Category',
+              'Sub Category',
               style: AppFontMain(
                 color: AppColorCode.headerColor,
                 fontSize: 15,
@@ -299,8 +323,8 @@ class _AddNewScreenState extends State<AddNewScreen> {
                         );
                       })
                   : Container(
-                      child: Text(
-                          'carMake null carMake: $mainCat makeModel: $subCat'),
+                      child:
+                          Text('Item Category: $mainCat Sub Category: $subCat'),
                     ),
             ),
             SizedBox(
@@ -311,10 +335,17 @@ class _AddNewScreenState extends State<AddNewScreen> {
               height: size.height * 0.07,
               width: size.width,
               onTap: () {
-                if (_formKey.currentState!.validate()) {
-                  serviceController
-                      .addToSubCategory(widget.category!.id.toString());
-                  // Get.offAll(() => MainHomeHolder());
+                if (imageFile != null) {
+                  if (_formKey.currentState!.validate()) {
+                    serviceController.addToItem(
+                      widget.category!.id.toString(),
+                      imageFile!,
+                      fileName!,
+                    );
+                    // Get.offAll(() => MainHomeHolder());
+                  }
+                } else {
+                  Get.snackbar("Please Select Image", "Cannot  Select Image");
                 }
               },
             )

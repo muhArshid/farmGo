@@ -26,7 +26,6 @@ class UserModel {
     cart = _convertCartItems(snapshot.data()![CART] ?? []);
     mainCategory =
         _convertMainCategoryItems(snapshot.data()![MAINCATEGORY] ?? []);
-    subCategory = _convertSubCategoryItems(snapshot.data()![SUBCATEGORY] ?? []);
   }
   List<CartItemModel> _convertCartItems(List cartFomDb) {
     List<CartItemModel> _result = [];
@@ -43,16 +42,6 @@ class UserModel {
     if (cartFomDb.length > 0) {
       cartFomDb.forEach((element) {
         _result.add(MainCategoryItemModel.fromMap(element));
-      });
-    }
-    return _result;
-  }
-
-  List<SubCategoryItemModel> _convertSubCategoryItems(List cartFomDb) {
-    List<SubCategoryItemModel> _result = [];
-    if (cartFomDb.length > 0) {
-      cartFomDb.forEach((element) {
-        _result.add(SubCategoryItemModel.fromMap(element));
       });
     }
     return _result;

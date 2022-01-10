@@ -121,15 +121,12 @@ class _SerchScreenState extends State<SerchScreen> {
             SizedBox(
               height: 5.h,
             ),
-            // Expanded(
-            //     child: Obx(() => ListView.builder(
-            //         itemCount:
-            //             userController.userModel.value.mainCategory?.length,
-            //         itemBuilder: (context, index) {
-            //           return SingleItemWidget(
-            //               category: userController
-            //                   .userModel.value.subCategory![index]);
-            //         }))),
+            if (serviceController.itemModelList.value != null)
+              Column(
+                children: serviceController.itemModelList.value!
+                    .map((cartItem) => SingleItemWidget(category: cartItem))
+                    .toList(),
+              )
           ]))
     ])));
   }

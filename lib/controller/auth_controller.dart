@@ -1,4 +1,5 @@
 import 'package:farmapp/constants/app_constants.dart';
+import 'package:farmapp/constants/firebase.dart';
 import 'package:farmapp/model/core/user.dart';
 import 'package:farmapp/utils/helper/showLoading.dart';
 import 'package:farmapp/views/screens/auth/login_screen.dart';
@@ -17,6 +18,8 @@ class UserController extends GetxController {
   TextEditingController password = TextEditingController();
   String usersCollection = "users";
   String usersItemsCollection = "items";
+  String usersmainCatCollection = "MainCategory";
+  String postCatCollection = "posts";
   Rx<UserModel> userModel = UserModel().obs;
 
   @override
@@ -79,7 +82,6 @@ class UserController extends GetxController {
       "id": userId,
       "email": email.text.trim(),
       "cart": [],
-      "mainCategory": [],
     });
   }
 
@@ -102,6 +104,43 @@ class UserController extends GetxController {
         .collection(usersCollection)
         .doc(firebaseUser.value!.uid)
         .update(data);
+  }
+
+  addPostData(Map<String, dynamic> data, String id) {
+    logger.i("UPDATED");
+    firebaseFirestore.collection(postCatCollection).doc(id).set(data);
+  }
+
+  updateUserMainCatWithId(Map<String, dynamic> data, String id) {
+    logger.i("UPDATED");
+    firebaseFirestore
+        .collection(usersCollection)
+        .doc(firebaseUser.value!.uid)
+        .collection(usersmainCatCollection)
+        .doc(id)
+        .set(data);
+  }
+
+  updateUserItemWithId(Map<String, dynamic> data, String id, String itemId) {
+    logger.i("UPDATED");
+    firebaseFirestore
+        .collection(usersCollection)
+        .doc(firebaseUser.value!.uid)
+        .collection(usersmainCatCollection)
+        .doc(id)
+        .collection(usersItemsCollection)
+        .doc(itemId)
+        .set(data);
+  }
+
+  updateUserDataSet(Map<String, dynamic> data, String id) {
+    logger.i("UPDATED");
+    firebaseFirestore
+        .collection(usersCollection)
+        .doc(firebaseUser.value!.uid)
+        .collection(usersmainCatCollection)
+        .doc(id)
+        .set(data);
   }
 
   Stream<UserModel> listenToUser() => firebaseFirestore

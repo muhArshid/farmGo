@@ -23,3 +23,9 @@ class ItemModel {
 
   List itemsToJson() => item!.map((item) => item.toJson()).toList();
 }
+
+class PaymentChoice {
+  const PaymentChoice({required this.title, required this.value});
+  final String title;
+  final String value;
+}
