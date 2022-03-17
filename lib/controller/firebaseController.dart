@@ -1,7 +1,7 @@
-import 'package:farmapp/constants.dart';
 import 'package:farmapp/constants/firebase.dart';
 import 'package:farmapp/views/screens/auth/login_screen.dart';
 import 'package:farmapp/views/screens/home/main_home_holder.dart';
+import 'package:farmapp/views/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -34,7 +34,7 @@ class AuthController extends GetxController {
       //   Get.offAll(() => const Register());
     } else {
       // if the user exists and logged in the the user is navigated to the Home Screen
-      Get.offAll(() => MainHomeHolder());
+      Get.offAll(() => MainHomeHolder(currentIndex: 1));
     }
   }
 
@@ -42,10 +42,10 @@ class AuthController extends GetxController {
     print(googleSignInAccount);
     if (googleSignInAccount == null) {
       // if the user is not found then the user is navigated to the Register Screen
-      Get.offAll(() => const LoginScreen());
+      Get.offAll(() => const SplashScreen());
     } else {
       // if the user exists and logged in the the user is navigated to the Home Screen
-      Get.offAll(() => MainHomeHolder());
+      Get.offAll(() => MainHomeHolder(currentIndex: 1));
     }
   }
 
@@ -68,7 +68,7 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       Get.snackbar(
-        "Error",
+        'Error'.tr,
         e.toString(),
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -106,7 +106,5 @@ class AuthController extends GetxController {
   //SIGN OUT METHOD
   Future signOut() async {
     await _auth.signOut();
-
-    print('signout');
   }
 }

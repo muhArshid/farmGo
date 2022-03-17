@@ -3,6 +3,7 @@ class SubCategoryItemModel {
   static const TAGID = "tag_id";
   static const PARENTID = "parentId";
   static const DOB = "date_of_birth";
+  static const IMAGEURL = "downloadUrl";
   static const IMAGE = "image";
   static const NAME = "name";
   static const IMAIN = "item_main";
@@ -14,6 +15,7 @@ class SubCategoryItemModel {
   String? parentId;
   String? date_of_birth;
   String? image;
+  String? downloadUrl;
   String? name;
   String? item_main;
   String? item_sub;
@@ -26,6 +28,7 @@ class SubCategoryItemModel {
       this.parentId,
       this.date_of_birth,
       this.image,
+      this.downloadUrl,
       this.name,
       this.item_main,
       this.item_sub,
@@ -38,6 +41,7 @@ class SubCategoryItemModel {
     parentId = data[PARENTID];
     date_of_birth = data[DOB];
     image = data[IMAGE];
+    downloadUrl = data[IMAGEURL];
     name = data[NAME];
     item_main = data[IMAIN];
     item_sub = data[ISUB];
@@ -54,6 +58,7 @@ class SubCategoryItemModel {
         IMAIN: item_main,
         ISUB: item_sub,
         IMAGE: image,
+        IMAGEURL: downloadUrl,
         DIS: dis,
         JOINDATE: join_date,
       };

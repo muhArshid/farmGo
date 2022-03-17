@@ -21,7 +21,7 @@ class SerchScreen extends StatefulWidget {
 }
 
 class _SerchScreenState extends State<SerchScreen> {
-  bool viewSerch = false;
+  bool serchTab = false;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -37,80 +37,134 @@ class _SerchScreenState extends State<SerchScreen> {
       ),
       Positioned(
         top: 0,
-        left: 180,
+        left: serchTab ? 100 : 180,
         right: 0,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  Get.to(() => AddNewScreen(
-                        category: widget.category,
-                      ));
-                },
-                child: Container(
-                  height: 35,
-                  width: 35,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: AppColorCode.mainGreyBg,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.add,
-                      color: AppColorCode.mainBlue,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 20),
-              InkWell(
-                onTap: () {},
+        child: serchTab
+            ? Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Container(
                   height: 5.h,
-                  width: 20.w,
+                  width: 23.w,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
                     color: AppColorCode.mainGreyBg,
                   ),
                   child: Center(
-                    child: Row(
-                      children: [
-                        Icon(
+                    child: TextField(
+                      style: TextStyle(color: AppColorCode.brandColor),
+                      onChanged: (value) {
+                        setState(() {
+                          //filteredList.clear(); //for the next time that we search we want the list to be unfilterted
+                          //    filteredList.addAll(autoList); //getting list to original state
+
+//removing items that do not contain the entered Text
+                          // filteredList.removeWhere((i) => i.contains(value.toString())==false);
+
+//following is just a bool parameter to keep track of lists
+                          //  searched=!searched;
+                        });
+                      },
+                      controller: serviceController.editingController,
+                      decoration: InputDecoration(
+                        suffixStyle: TextStyle(color: Colors.red),
+                        prefixIconColor: AppColorCode.brandColor,
+                        border: InputBorder.none,
+                        hoverColor: AppColorCode.brandColor,
+                        fillColor: AppColorCode.brandColor,
+                        labelText: "",
+                        prefixIcon: Icon(
                           Icons.search,
-                          color: AppColorCode.mainBlue,
-                          size: 20,
+                          color: AppColorCode.brandColor,
                         ),
-                        Text(
-                          "Serch",
-                          style: AppFontMain(
-                            color: AppColorCode.headerColor,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
+              )
+            : Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Get.to(() => AddNewScreen(
+                              category: widget.category,
+                            ));
+                      },
+                      child: Container(
+                        height: 35,
+                        width: 35,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          color: AppColorCode.mainGreyBg,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.add,
+                            color: AppColorCode.brandColor,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // SizedBox(width: 20),
+                    // InkWell(
+                    //   onTap: () {},
+                    //   child: Container(
+                    //     height: 5.h,
+                    //     width: 23.w,
+                    //     decoration: BoxDecoration(
+                    //       borderRadius: BorderRadius.circular(14),
+                    //       color: AppColorCode.mainGreyBg,
+                    //     ),
+                    //     child: Center(
+                    //       child: Row(
+                    //         children: [
+                    //           Icon(
+                    //             Icons.search,
+                    //             color: AppColorCode.brandColor,
+                    //             size: 20,
+                    //           ),
+                    //           InkWell(
+                    //             onTap: () {
+                    //               setState(() {
+                    //                 serchTab = true;
+                    //               });
+                    //             },
+                    //             child: Padding(
+                    //               padding: const EdgeInsets.all(8.0),
+                    //               child: Text(
+                    //                 "Serch",
+                    //                 style: AppFontMain(
+                    //                   color: AppColorCode.headerColor,
+                    //                   fontSize: 15,
+                    //                   fontWeight: FontWeight.w400,
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
       ),
       Positioned(
           top: 60,
           left: 0,
           right: 10,
           bottom: 0,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child: ListView(children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                'Members',
+                'Members'.tr,
                 style: AppFontMain(
                   color: AppColorCode.headerColor,
                   fontSize: 22,
@@ -121,12 +175,17 @@ class _SerchScreenState extends State<SerchScreen> {
             SizedBox(
               height: 5.h,
             ),
-            if (serviceController.itemModelList.value != null)
-              Column(
-                children: serviceController.itemModelList.value!
-                    .map((cartItem) => SingleItemWidget(category: cartItem))
-                    .toList(),
-              )
+            serchTab
+                ? Column(
+                    children: serviceController.itemModelList.value!
+                        .map((cartItem) => SingleItemWidget(category: cartItem))
+                        .toList(),
+                  )
+                : Column(
+                    children: serviceController.itemModelList.value!
+                        .map((cartItem) => SingleItemWidget(category: cartItem))
+                        .toList(),
+                  )
           ]))
     ])));
   }

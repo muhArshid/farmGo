@@ -8,7 +8,8 @@ class ItemModel {
   ItemModel({this.item});
 
   ItemModel.fromSnapshot(DocumentSnapshot snapshot) {
-    item = _convertSubCategoryItems(snapshot.data()![SUBCATEGORY] ?? []);
+    item = _convertSubCategoryItems(
+        (snapshot.data() as Map<String, dynamic>)[SUBCATEGORY]);
   }
 
   List<SubCategoryItemModel> _convertSubCategoryItems(List cartFomDb) {
@@ -25,7 +26,9 @@ class ItemModel {
 }
 
 class PaymentChoice {
-  const PaymentChoice({required this.title, required this.value});
+  const PaymentChoice(
+      {required this.title, required this.tittle_value, required this.value});
+  final String tittle_value;
   final String title;
   final String value;
 }

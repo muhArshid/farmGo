@@ -35,6 +35,33 @@ Widget button(
   );
 }
 
+Widget loadingButton(
+    {required double width,
+    required double height,
+    required Function() onTap,
+    required String label,
+    Color labelColor = AppColorCode.pureWhite,
+    Color buttonColor = AppColorCode.brandColor}) {
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        color: buttonColor,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+            child: CircularProgressIndicator(
+          color: AppColorCode.pureWhite,
+        )),
+      ),
+    ),
+  );
+}
+
 Widget buildtextForm(
     {String? label,
     String? hintText,
@@ -101,6 +128,59 @@ Widget buildtextForm(
         ),
       ),
     ],
+  );
+}
+
+Widget buildCustextForm(
+    {String? label,
+    String? hintText,
+    bool obscureText = false,
+    Widget? suffixIcon,
+    TextInputType keyboardType = TextInputType.text,
+    int minLines = 1,
+    int maxLines = 1,
+    TextEditingController? controller,
+    String? Function(String?)? validator,
+    Function()? onTap}) {
+  return Container(
+    // height: 55,
+    child: TextFormField(
+      onTap: onTap,
+      controller: controller,
+      validator: validator,
+      minLines: minLines,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      cursorColor: AppColorCode.primaryText,
+      style: AppFontMain(
+        color: AppColorCode.primaryText,
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+      ),
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.fromLTRB(10, 8, 8, 0),
+        suffixIcon: suffixIcon,
+        hintText: hintText,
+        fillColor: Colors.white,
+        filled: true,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(7),
+          borderSide: BorderSide(color: AppColorCode.border),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(7),
+          borderSide: BorderSide(color: Colors.red),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(7.0),
+          borderSide: BorderSide(
+            color: AppColorCode.border,
+            width: 1.0,
+          ),
+        ),
+      ),
+    ),
   );
 }
 
@@ -276,7 +356,7 @@ Widget appBar({String? label}) {
             child: Center(
               child: Icon(
                 Icons.arrow_back,
-                color: AppColorCode.mainBlue,
+                color: AppColorCode.brandColor,
                 size: 20,
               ),
             ),

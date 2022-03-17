@@ -63,32 +63,32 @@ Widget drawer(BuildContext context) {
           ],
         ),
         SizedBox(height: 40),
-        drawerCard(
-          label: 'Home',
-          icon: AssetConstant.profile,
-          onTap: () {
-            //Get.offAll(() => MainHomeHolder(currentIndex: 0));
-          },
-        ),
-        drawerCard(
-          label: 'Profile',
-          icon: AssetConstant.profile,
-          onTap: () {
-            //   Get.offAll(() => MainHomeHolder(currentIndex: 2));
-          },
-        ),
-        Divider(),
-        SizedBox(height: 15),
-        drawerCard(
-          label: 'Dashbord',
-          icon: AssetConstant.profile,
-          onTap: () {
-            Get.back();
-            //   Get.to(() => MyBookings());
-          },
-        ),
-        drawerCard(label: 'About Us', icon: AssetConstant.profile),
-        drawerCard(label: 'FAQs', icon: AssetConstant.profile),
+        // drawerCard(
+        //   label: 'Home',
+        //   icon: AssetConstant.profile,
+        //   onTap: () {
+        //     //Get.offAll(() => MainHomeHolder(currentIndex: 0));
+        //   },
+        // ),
+        // drawerCard(
+        //   label: 'Profile',
+        //   icon: AssetConstant.profile,
+        //   onTap: () {
+        //     //   Get.offAll(() => MainHomeHolder(currentIndex: 2));
+        //   },
+        // ),
+        // Divider(),
+        // SizedBox(height: 15),
+        // drawerCard(
+        //   label: 'Dashbord',
+        //   icon: AssetConstant.profile,
+        //   onTap: () {
+        //     Get.back();
+        //     //   Get.to(() => MyBookings());
+        //   },
+        // ),
+        // drawerCard(label: 'About Us', icon: AssetConstant.profile),
+        // drawerCard(label: 'FAQs', icon: AssetConstant.profile),
       ],
     ),
   );

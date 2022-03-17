@@ -38,10 +38,10 @@ class CartController extends GetxController {
             }
           ])
         });
-        Get.snackbar("Item added", "${product.name} was added to your cart");
+        Get.snackbar('Item_added'.tr, "${product.name}" + 'was_added_cart'.tr);
       }
     } catch (e) {
-      Get.snackbar("Error", "Cannot add this item");
+      Get.snackbar('Error'.tr, 'Cannot_add_item'.tr);
       debugPrint(e.toString());
     }
   }
@@ -52,7 +52,7 @@ class CartController extends GetxController {
         "cart": FieldValue.arrayRemove([cartItem.toJson()])
       });
     } catch (e) {
-      Get.snackbar("Error", "Cannot remove this item");
+      Get.snackbar('Error'.tr, 'Cannot_remove_item'.tr);
       //debugPrint(e.message);
     }
   }

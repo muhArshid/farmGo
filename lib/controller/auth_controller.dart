@@ -1,13 +1,12 @@
 import 'package:farmapp/constants/app_constants.dart';
 import 'package:farmapp/constants/firebase.dart';
 import 'package:farmapp/model/core/user.dart';
-import 'package:farmapp/utils/helper/showLoading.dart';
 import 'package:farmapp/views/screens/auth/login_screen.dart';
 import 'package:farmapp/views/screens/home/main_home_holder.dart';
+import 'package:farmapp/views/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:farmapp/constants.dart';
 
 class UserController extends GetxController {
   static UserController instance = Get.find();
@@ -19,6 +18,7 @@ class UserController extends GetxController {
   String usersCollection = "users";
   String usersItemsCollection = "items";
   String usersmainCatCollection = "MainCategory";
+  String usersmainCatPayMentCollection = "Payment";
   String postCatCollection = "posts";
   Rx<UserModel> userModel = UserModel().obs;
 
@@ -32,30 +32,33 @@ class UserController extends GetxController {
 
   _setInitialScreen(User? user) {
     if (user == null) {
-      Get.offAll(() => LoginScreen());
+      Get.offAll(() => (SplashScreen()));
     } else {
       userModel.bindStream(listenToUser());
-      Get.offAll(() => MainHomeHolder());
+      Get.offAll(() => MainHomeHolder(
+            currentIndex: 1,
+          ));
     }
   }
 
-  void signIn() async {
+  Future<bool> signIn() async {
     try {
-      showLoading();
-      await auth
-          .signInWithEmailAndPassword(
-              email: email.text.trim(), password: password.text.trim())
-          .then((result) {
-        _clearControllers();
-      });
-    } catch (e) {
-      debugPrint(e.toString());
-      Get.snackbar("Sign In Failed", "Try again");
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
+          email: email.text.trim(), password: password.text.trim());
+      print(userCredential);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        return false;
+      } else if (e.code == 'wrong-password') {
+        return false;
+      }
+      return false;
     }
   }
 
-  void signUp() async {
-    showLoading();
+  Future<bool> signUp() async {
+    //   showLoading();
     try {
       await auth
           .createUserWithEmailAndPassword(
@@ -66,9 +69,12 @@ class UserController extends GetxController {
         _addUserIemToFirestore(_userId);
         _clearControllers();
       });
+      return true;
     } catch (e) {
       debugPrint(e.toString());
-      Get.snackbar("Sign In Failed", "Try again");
+      Get.snackbar('Sign_Up_Failed'.tr, e.toString());
+      Get.back();
+      return false;
     }
   }
 
@@ -81,6 +87,8 @@ class UserController extends GetxController {
       "name": name.text.trim(),
       "id": userId,
       "email": email.text.trim(),
+      "profile_image":
+          'https://firebasestorage.googleapis.com/v0/b/gothic-list-230105.appspot.com/o/app%2Fdemy2.png?alt=media&token=50c6d030-a5eb-4f8a-912b-0cd246488086',
       "cart": [],
     });
   }
@@ -104,6 +112,11 @@ class UserController extends GetxController {
         .collection(usersCollection)
         .doc(firebaseUser.value!.uid)
         .update(data);
+  }
+
+  updatePostData(Map<String, dynamic> data, String id) {
+    logger.i("UPDATED");
+    firebaseFirestore.collection(postCatCollection).doc(id).update(data);
   }
 
   addPostData(Map<String, dynamic> data, String id) {
@@ -140,6 +153,18 @@ class UserController extends GetxController {
         .doc(firebaseUser.value!.uid)
         .collection(usersmainCatCollection)
         .doc(id)
+        .set(data);
+  }
+
+  updateUserPaymentSet(Map<String, dynamic> data, String id, String paymentId) {
+    logger.i("UPDATED");
+    firebaseFirestore
+        .collection(usersCollection)
+        .doc(firebaseUser.value!.uid)
+        .collection(usersmainCatCollection)
+        .doc(id)
+        .collection(usersmainCatPayMentCollection)
+        .doc(paymentId)
         .set(data);
   }
 

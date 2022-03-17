@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmapp/constants.dart';
+import 'package:farmapp/service/FireBase/notification_service.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AssetConstants.dart';
-import 'package:farmapp/views/screens/commen_screen.dart';
-import 'package:farmapp/views/screens/profile/explore.dart';
+
 import 'package:farmapp/views/screens/profile/profile.dart';
+import 'package:farmapp/views/screens/profile/widgets/post_widget.dart';
 import 'package:farmapp/views/screens/sevicese/home_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -21,7 +24,7 @@ class MainHomeHolder extends StatefulWidget {
 }
 
 class _MainHomeHolderState extends State<MainHomeHolder> {
-  int currentIndex = 0;
+  int currentIndex = 1;
   // MainController mainCt = Get.find();
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   @override
@@ -30,6 +33,26 @@ class _MainHomeHolderState extends State<MainHomeHolder> {
       currentIndex = widget.currentIndex!;
     }
     super.initState();
+    //give you the message on which user tag
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) {
+        final routerfromeMessege = message.data["route"];
+        print(routerfromeMessege);
+      }
+    });
+    //foreGround
+    FirebaseMessaging.onMessage.listen((message) async {
+      if (message.notification != null) {
+        print(message.notification!.title);
+        NotificationService.showNotifications(message);
+      }
+    });
+    //Background open app page via nottification
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      final routerfromeMessege = message.data["route"];
+      Get.toNamed(routerfromeMessege);
+      print(routerfromeMessege);
+    });
   }
 
   Widget callpage(int currentIndex) {
@@ -39,10 +62,10 @@ class _MainHomeHolderState extends State<MainHomeHolder> {
       case 1:
         return HomeScreen();
       case 2:
-        return ExploreScreen();
+        return PostWidgets();
 
       default:
-        return TextSrceen();
+        return PostWidgets();
     }
   }
 
@@ -96,7 +119,7 @@ class _MainHomeHolderState extends State<MainHomeHolder> {
           body: callpage(currentIndex),
           bottomNavigationBar: CurvedNavigationBar(
             key: _bottomNavigationKey,
-            index: 0,
+            index: 1,
             height: 60.0,
             items: <Widget>[
               Icon(Icons.perm_identity, size: 30),

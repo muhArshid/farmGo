@@ -1,10 +1,15 @@
-import 'package:farmapp/constants.dart';
+import 'dart:io';
+import 'package:farmapp/views/screens/profile/settings.dart';
+import 'package:path/path.dart' as path;
 import 'package:farmapp/constants/controllers.dart';
+import 'package:farmapp/controller/profile_controller.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
-import 'package:farmapp/utils/AssetConstants.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:farmapp/views/screens/profile/widgets/show_my_post.dart';
+import 'package:farmapp/views/widgets/custom_modal.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -15,180 +20,178 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  ProfileContoller ctr = Get.put(ProfileContoller());
+  final GlobalKey _menuKey = new GlobalKey();
+  String? fileName;
+  File? imageFile;
+  bool isloading = false;
+  bool isEdit = false;
+  bool isNameEdit = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    ctr.getMyPost();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-            body: ListView(
-      children: [
-        InkWell(
-          onTap: () {
-            userController.signOut();
-          },
-          child: Text(
-            'logout',
-            style: AppFontMain(
-              color: AppColorCode.headerColor,
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        Container(
-          height: 30.h,
-          decoration: BoxDecoration(color: AppColorCode.brandColor),
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Sam alex',
-              style: AppFontMain(
-                color: AppColorCode.headerColor,
-                fontSize: 33.sp,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              'Heading details',
-              style: AppFontMain(
-                color: AppColorCode.headerColor,
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Posts',
-            style: AppFontMain(
-              color: AppColorCode.headerColor,
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            width: 10.w,
-            height: 60.h,
-            decoration: BoxDecoration(
-                color: AppColorCode.pureWhite,
-                borderRadius: BorderRadius.circular(20)),
-            child: Column(
+    return GetBuilder<ProfileContoller>(builder: (ct) {
+      return Scaffold(
+          body: ListView(
+        children: [
+          Container(
+            child: Stack(
               children: [
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: AssetImage(AssetConstant.profiledemy),
-                      radius: 30,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          'Sam alex',
-                          style: AppFontMain(
-                            color: AppColorCode.headerColor,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          'Heading details',
-                          style: AppFontMain(
-                            color: AppColorCode.headerColor,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mi toVr,faro sagittis,far',
-                  style: AppFontMain(
-                    color: AppColorCode.headerColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                Positioned(
+                  child: Container(
+                    child: userController.userModel.value.profileImage != null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
+                                radius: 70,
+                                backgroundImage: imageFile == null
+                                    ? NetworkImage(userController
+                                        .userModel.value.profileImage!)
+                                    : FileImage(imageFile!) as ImageProvider,
+                                backgroundColor: AppColorCode.pureWhite,
+                              ),
+                              Center(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColorCode.brandColor,
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: PopupMenuButton(
+                                        key: _menuKey,
+                                        itemBuilder: (_) =>
+                                            <PopupMenuItem<String>>[
+                                              new PopupMenuItem<String>(
+                                                  child: Text('Gallery'.tr),
+                                                  value: 'g'),
+                                              new PopupMenuItem<String>(
+                                                  child: Text('Camera'.tr),
+                                                  value: 'c'),
+                                            ],
+                                        onSelected: (val) async {
+                                          final picker = ImagePicker();
+                                          PickedFile? pickedImage;
+                                          pickedImage = await picker.getImage(
+                                              source: val == 'c'
+                                                  ? ImageSource.camera
+                                                  : ImageSource.gallery,
+                                              maxWidth: 1920);
+
+                                          fileName =
+                                              path.basename(pickedImage!.path);
+                                          imageFile = File(pickedImage.path);
+
+                                          serviceController.upateprofile(
+                                              imageFile!,
+                                              fileName!,
+                                              userController.userModel.value
+                                                  .profileImage!);
+
+                                          setState(() {
+                                            isEdit = true;
+                                          });
+                                        },
+                                        child: Text(
+                                          'Change_Profile'.tr,
+                                          style: AppFontMain(
+                                            color: AppColorCode.pureWhite,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w300,
+                                          ),
+                                        )),
+                                  ),
+                                ),
+                              )
+                            ],
+                          )
+                        : CircularProgressIndicator.adaptive(),
+                    height: 30.h,
+                    width: 100.w,
+                    decoration: BoxDecoration(color: AppColorCode.brandColor),
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  width: 80.w,
-                  height: 30.h,
-                  decoration: BoxDecoration(
-                      color: AppColorCode.brandColor,
-                      borderRadius: BorderRadiusDirectional.circular(10)),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.favorite_border,
-                      color: AppColorCode.brandColor,
-                      size: 30,
-                    ),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    Icon(
-                      Icons.messenger_outline_outlined,
-                      color: AppColorCode.brandColor,
-                      size: 30,
-                    ),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    Icon(
-                      Icons.file_upload_outlined,
-                      color: AppColorCode.brandColor,
-                      size: 30,
-                    ),
-                  ],
-                )
+                Positioned(
+                    right: 10,
+                    bottom: 150,
+                    left: 320,
+                    top: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                        onTap: () {
+                          var dialog = CustomAlertDialog(
+                              title: 'Logout'.tr,
+                              message: 'want_logout'.tr,
+                              onPostivePressed: () {
+                                userController.signOut();
+                              },
+                              positiveBtnText: 'Yes'.tr,
+                              negativeBtnText: 'No'.tr);
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) => dialog);
+                        },
+                        child: Icon(
+                          Icons.logout_outlined,
+                          color: AppColorCode.pureWhite,
+                          size: 25,
+                        ),
+                      ),
+                    )),
               ],
             ),
           ),
-        )
-      ],
-    )));
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'My_Posts'.tr,
+                  style: AppFontMain(
+                    color: AppColorCode.headerColor,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    Get.to(() => SettingScreen());
+                  },
+                  child: Icon(
+                    Icons.settings,
+                    color: AppColorCode.brandColor,
+                    size: 25,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          // if (ctr.apiLoading!.value)
+          //   Center(child: CircularProgressIndicator.adaptive()),
+          Container(
+              height: ct.myPosts!.length * 300,
+              width: 100.w,
+              child: ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: ct.myPosts!.length,
+                  itemBuilder: (context, index) {
+                    return MyPostWidget(postModel: ct.myPosts![index]);
+                  })),
+        ],
+      ));
+    });
   }
 }

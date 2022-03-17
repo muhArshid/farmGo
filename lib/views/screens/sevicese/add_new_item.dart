@@ -1,22 +1,18 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmapp/constants/controllers.dart';
-import 'package:farmapp/constants/firebase.dart';
-import 'package:farmapp/controller/service_condroler.dart';
 import 'package:farmapp/model/core/category_item.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
 import 'package:farmapp/utils/AssetConstants.dart';
 import 'package:farmapp/utils/helper/date_format_helper.dart';
-import 'package:farmapp/utils/helper/image_picker.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:path/path.dart' as path;
+import 'package:get/get.dart';
 
 class AddNewScreen extends StatefulWidget {
   final MainCategoryItemModel? category;
@@ -32,6 +28,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
   var mainCat, subCat;
   String? fileName;
   File? imageFile;
+  bool isloading = false;
   final _formKey = GlobalKey<FormState>();
   late DateTime pickedDate;
   Future<void> _selectDateTo(BuildContext context) async {
@@ -109,9 +106,9 @@ class _AddNewScreenState extends State<AddNewScreen> {
                               key: _menuKey,
                               itemBuilder: (_) => <PopupMenuItem<String>>[
                                 new PopupMenuItem<String>(
-                                    child: const Text('Gallery'), value: 'g'),
+                                    child: Text('Gallery'.tr), value: 'g'),
                                 new PopupMenuItem<String>(
-                                    child: const Text('Camera'), value: 'c'),
+                                    child: Text('Camera'.tr), value: 'c'),
                               ],
                               onSelected: (val) async {
                                 final picker = ImagePicker();
@@ -146,10 +143,10 @@ class _AddNewScreenState extends State<AddNewScreen> {
                         children: [
                           buildtextForm(
                             controller: serviceController.subCategoryName,
-                            label: 'Name',
+                            label: 'Name'.tr,
                             validator: (val) {
                               if (val!.isEmpty) {
-                                return 'Enter Name';
+                                return 'Enter_Name'.tr;
                               }
                             },
                           ),
@@ -158,10 +155,10 @@ class _AddNewScreenState extends State<AddNewScreen> {
                           ),
                           buildtextForm(
                             controller: serviceController.id,
-                            label: 'Id',
+                            label: 'Id'.tr,
                             validator: (val) {
                               if (val!.isEmpty) {
-                                return 'Enter  ID';
+                                return 'Enter_ID';
                               }
                             },
                           ),
@@ -174,10 +171,10 @@ class _AddNewScreenState extends State<AddNewScreen> {
                               onTap: () {
                                 _selectDateTo(context);
                               },
-                              label: 'Date Of Birth',
+                              label: 'Date_Birth'.tr,
                               validator: (val) {
                                 if (val!.isEmpty) {
-                                  return 'Choose Date ';
+                                  return 'Choose_Date'.tr;
                                 }
                               },
                             ),
@@ -193,10 +190,10 @@ class _AddNewScreenState extends State<AddNewScreen> {
               controller: serviceController.dis,
               maxLines: 7,
               minLines: 7,
-              label: 'Discription',
+              label: 'Description'.tr,
               validator: (val) {
                 if (val!.isEmpty) {
-                  return 'Enter Discription';
+                  return 'Enter_Description'.tr;
                 }
               },
             ),
@@ -204,7 +201,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
               height: 20,
             ),
             Text(
-              'Item Category',
+              'Item_Category'.tr,
               style: AppFontMain(
                 color: AppColorCode.headerColor,
                 fontSize: 15,
@@ -265,7 +262,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
               height: 10,
             ),
             Text(
-              'Sub Category',
+              'Sub_Category'.tr,
               style: AppFontMain(
                 color: AppColorCode.headerColor,
                 fontSize: 15,
@@ -285,8 +282,7 @@ class _AddNewScreenState extends State<AddNewScreen> {
                         if (!snapshot.hasData) {
                           debugPrint('snapshot status: ${snapshot.error}');
                           return Container(
-                            child: Text(
-                                'snapshot empty carMake: $mainCat makeModel: $subCat'),
+                            child: Text(' empty : $mainCat makeModel: $subCat'),
                           );
                         }
                         if (setDefaultSubCat) {
@@ -330,25 +326,36 @@ class _AddNewScreenState extends State<AddNewScreen> {
             SizedBox(
               height: 30,
             ),
-            button(
-              label: 'SUBMIT ',
-              height: size.height * 0.07,
-              width: size.width,
-              onTap: () {
-                if (imageFile != null) {
-                  if (_formKey.currentState!.validate()) {
-                    serviceController.addToItem(
-                      widget.category!.id.toString(),
-                      imageFile!,
-                      fileName!,
-                    );
-                    // Get.offAll(() => MainHomeHolder());
-                  }
-                } else {
-                  Get.snackbar("Please Select Image", "Cannot  Select Image");
-                }
-              },
-            )
+            isloading
+                ? loadingButton(
+                    label: ' ',
+                    height: size.height * 0.07,
+                    width: size.width,
+                    onTap: () {},
+                  )
+                : button(
+                    label: 'SUBMIT'.tr,
+                    height: size.height * 0.07,
+                    width: size.width,
+                    onTap: () {
+                      if (imageFile != null) {
+                        if (_formKey.currentState!.validate()) {
+                          setState(() {
+                            isloading = true;
+                          });
+                          serviceController.addToItem(
+                            widget.category!.id.toString(),
+                            imageFile!,
+                            fileName!,
+                          );
+                          // Get.offAll(() => MainHomeHolder());
+                        }
+                      } else {
+                        Get.snackbar(
+                            'Please_Select_Image'.tr, 'Cannot_Select_Image'.tr);
+                      }
+                    },
+                  )
           ]),
         ),
       )

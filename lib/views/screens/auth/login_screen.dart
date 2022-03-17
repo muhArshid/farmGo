@@ -1,10 +1,9 @@
-import 'package:farmapp/constants.dart';
 import 'package:farmapp/constants/controllers.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
 import 'package:farmapp/utils/AssetConstants.dart';
 import 'package:farmapp/views/screens/auth/sign_up_screen.dart';
-import 'package:farmapp/views/screens/home/main_home_holder.dart';
+import 'package:farmapp/views/splash_screen.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +29,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool passwordVisible = false;
   bool rememberMe = false;
+  bool isLoading = false;
+
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -77,11 +78,11 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
                   buildtextFormLogin(
-                    label: 'Email',
+                    label: 'Email'.tr,
                     controller: userController.email,
                     validator: (val) {
                       if (val!.isEmpty) {
-                        return 'Enter Email ID';
+                        return 'Enter_Email_ID'.tr;
                       }
                       if (!RegExp(
                               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -98,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 25),
                   buildtextFormLogin(
                     controller: userController.password,
-                    label: 'Password',
+                    label: 'Password'.tr,
                     suffixIcon: InkWell(
                       onTap: () {
                         setState(() {
@@ -122,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     obscureText: passwordVisible ? false : true,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Enter Password';
+                        return 'Enter_Password'.tr;
                       }
 
                       return null;
@@ -135,14 +136,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   //       (bool val) {
                   //         rememberMe = val;
                   //       },
-                  //       'Remember Me',
+                  //       'Remember Me'.tr,
                   //     ),
                   //     InkWell(
                   //       onTap: () {
                   //         // Get.to(() => ForgotPassword());
                   //       },
                   //       child: Text(
-                  //         'Forgot Password',
+                  //         'Forgot Password'.tr,
                   //         style: AppFontMain(),
                   //       ),
                   //     ),
@@ -154,54 +155,49 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           SizedBox(height: 30),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: button(
-              label: 'Log In',
-              height: size.height * 0.07,
-              width: size.width,
-              onTap: () {
-                if (_formKey.currentState!.validate()) {
-                  userController.signIn();
-                  // authController
-                  //     .signIn(
-                  //         emaildata: emailController.text,
-                  //         passworddata: passwordController.text)
-                  //     .then((result) {
-                  //   if (result == null) {
-                  //     Get.to(() => MainHomeHolder());
-                  //   } else {
-                  //     Fluttertoast.showToast(
-                  //         msg: result,
-                  //         backgroundColor: AppColorCode.brandColor);
-                  //   }
-                  // });
-                }
-              },
-            ),
-          ),
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: isLoading
+                  ? loadingButton(
+                      label: ' '.tr,
+                      height: size.height * 0.07,
+                      width: size.width,
+                      onTap: () {},
+                    )
+                  : button(
+                      label: 'Log_In'.tr,
+                      height: size.height * 0.07,
+                      width: size.width,
+                      onTap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          var flag = await userController.signIn();
+                          if (!flag) {
+                            Fluttertoast.showToast(
+                                msg: 'please_check_credentials'.tr,
+                                backgroundColor: AppColorCode.brandColor);
+                            setState(() {
+                              isLoading = false;
+                            });
+                          }
+                        }
+                      },
+                    )),
           SizedBox(height: 20),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 50),
             child: button(
-              label: 'SingUP',
+              labelColor: AppColorCode.brandColor,
+              buttonColor: AppColorCode.pureWhite,
+              label: 'Sing_UP'.tr,
               height: size.height * 0.07,
               width: size.width,
               onTap: () {
-                Get.to(() => SignUpScreen());
+                Get.to(() => SplashScreen());
               },
             ),
           ),
-
-          // ElevatedButton(
-          //   style: ElevatedButton.styleFrom(
-          //     primary: Colors.red,
-          //   ),
-          //   onPressed: () {
-          //     authController.signInWithGoogle();
-          //   },
-          //   child: const Text("Sign In with Google"),
-          // ),
-          // SizedBox(height: 30),
         ],
       )),
     );

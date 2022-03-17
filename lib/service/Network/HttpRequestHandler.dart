@@ -13,7 +13,7 @@ class HttpRequestHandler {
   late ErrorResponse error;
 
   Future<bool> sendTokenServerRequest(String urlExtension, dynamic body) async {
-    MainController controller = Get.find();
+    AppController controller = Get.find();
     var token = 'controller.token';
     print(token);
     print(urlExtension);

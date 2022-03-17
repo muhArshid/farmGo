@@ -29,14 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final fireBase = FirebaseFirestore.instance;
   bool passwordVisible = false;
   bool verifyPasswordVisible = false;
-  // create() async {
-  //   try {
-  //     await fireBase.collection("Users").doc().set(
-  //         {"name": name.text, "email": email.text, "password": password.text});
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -73,30 +66,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 children: [
                   // buildtextForm(
-                  //   label: 'Name',
+                  //   label: 'Name'.tr,
                   //   controller: name,
                   //   validator: (val) {
                   //     if (val!.isEmpty) return 'Required';
                   //   },
                   // ),
                   buildtextForm(
-                    label: 'Email',
+                    label: 'Email'.tr,
                     controller: userController.email,
                     validator: (val) {
                       if (val!.isEmpty) {
-                        return 'Enter Email ID';
+                        return 'Enter_Email_ID';
                       }
                       if (!RegExp(
                               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                           .hasMatch(val)) {
-                        return 'Enter a Valid Email';
+                        return 'Enter_Valid_Email';
                       }
                       return null;
                     },
                   ),
+                  SizedBox(height: 20),
                   buildtextForm(
                     controller: userController.password,
-                    label: 'Password',
+                    label: 'Password'.tr,
                     suffixIcon: InkWell(
                       onTap: () {
                         setState(() {
@@ -116,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     obscureText: passwordVisible ? false : true,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Enter Password';
+                        return 'Enter_Password'.tr;
                       }
 
                       return null;
@@ -124,7 +118,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   // buildtextForm(
                   //   controller: userController.password,
-                  //   label: 'Verify Password',
+                  //   label: 'Verify Password'.tr,
                   //   suffixIcon: InkWell(
                   //     onTap: () {
                   //       setState(() {
@@ -156,19 +150,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
           SizedBox(height: 30),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: button(
-              label: 'Next',
-              height: size.height * 0.07,
-              width: size.width,
-              onTap: () {
-                if (_formKey.currentState!.validate()) {
-                  // create();
-                  if (_formKey.currentState!.validate()) {
-                    userController.signUp();
-                  }
-                }
-              },
-            ),
+            child: isLoading
+                ? loadingButton(
+                    label: ' '.tr,
+                    height: size.height * 0.07,
+                    width: size.width,
+                    onTap: () {},
+                  )
+                : button(
+                    label: 'Next'.tr,
+                    height: size.height * 0.07,
+                    width: size.width,
+                    onTap: () async {
+                      if (_formKey.currentState!.validate()) {
+                        // create();
+                        if (_formKey.currentState!.validate()) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          var isScuccess = await userController.signUp();
+                          if (!isScuccess) {
+                            setState(() {
+                              isLoading = true;
+                            });
+                          }
+                        }
+                      }
+                    },
+                  ),
           ),
           SizedBox(height: 30),
           InkWell(
@@ -177,7 +186,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               },
               child: Center(
                   child: Text(
-                'Login',
+                'Login'.tr,
                 style: AppFontMain(
                   color: Colors.black,
                   fontSize: 15,

@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmapp/constants.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
-import 'package:farmapp/views/Dashboard/dashboard_screen.dart';
-import 'package:farmapp/views/Dashboard/main/main_screen.dart';
 import 'package:farmapp/views/screens/Home/main_home_holder.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
 import 'package:flutter/cupertino.dart';

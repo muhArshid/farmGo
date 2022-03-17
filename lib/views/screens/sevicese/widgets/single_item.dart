@@ -1,8 +1,10 @@
 import 'package:farmapp/model/core/sub_category_item.dart';
 import 'package:farmapp/utils/AppColorCode.dart';
 import 'package:farmapp/utils/AppFontOswald.dart';
+import 'package:farmapp/views/screens/sevicese/widgets/single_item_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:sizer/sizer.dart';
 
 class SingleItemWidget extends StatelessWidget {
@@ -15,9 +17,15 @@ class SingleItemWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: InkWell(
         onTap: () {
-          // Get.to(() => AddNewScreen(
-          //             category: widget.category,
-          //           ));
+          showBarModalBottomSheet(
+            context: context,
+            builder: (context) => Container(
+              color: Colors.white,
+              child: SingleItemView(
+                category: category,
+              ),
+            ),
+          );
         },
         child: Container(
           decoration: BoxDecoration(

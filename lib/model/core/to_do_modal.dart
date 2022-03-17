@@ -5,8 +5,10 @@ class TodoModel {
   static const CON = "content";
   static const ISDONE = "isDone";
   static const CEON = "createdOn";
+  static const TODODATE = "todoDate";
   String? id;
   String? content;
+  String? todoDate;
   Timestamp? createdOn;
   bool? isDone;
 
@@ -15,6 +17,7 @@ class TodoModel {
     this.content,
     this.isDone,
     this.createdOn,
+    this.todoDate,
   });
 
   TodoModel.fromMap(Map<String, dynamic> data) {
@@ -22,7 +25,14 @@ class TodoModel {
     content = data[CON];
     createdOn = data[CEON];
     isDone = data[ISDONE];
+    todoDate = data[TODODATE];
   }
 
-  Map toJson() => {ID: id, CON: content, CEON: createdOn, ISDONE: isDone};
+  Map toJson() => {
+        ID: id,
+        CON: content,
+        CEON: createdOn,
+        ISDONE: isDone,
+        TODODATE: todoDate
+      };
 }

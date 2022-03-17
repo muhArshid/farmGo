@@ -6,20 +6,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmapp/constants/app_constants.dart';
 import 'package:farmapp/constants/controllers.dart';
 import 'package:farmapp/constants/firebase.dart';
-import 'package:farmapp/controller/auth_controller.dart';
-import 'package:farmapp/model/core/item.dart';
 import 'package:farmapp/model/core/sub_category_item.dart';
-import 'package:farmapp/views/screens/sevicese/home_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as Path;
 import 'package:firebase_storage/firebase_storage.dart';
 
 class ServiceContoller extends GetxController {
   static ServiceContoller instance = Get.find();
   String usersItemCollection = "items";
   TextEditingController amount = TextEditingController();
+  TextEditingController amountCondent = TextEditingController();
   TextEditingController categorName = TextEditingController();
   TextEditingController subCategoryName = TextEditingController();
   TextEditingController id = TextEditingController();
@@ -27,7 +27,9 @@ class ServiceContoller extends GetxController {
   TextEditingController itemMainCat = TextEditingController();
   TextEditingController itemSubCat = TextEditingController();
   TextEditingController dis = TextEditingController();
-  UserController _authController = Get.put(UserController());
+  TextEditingController name = TextEditingController();
+  TextEditingController updateDis = TextEditingController();
+
   Rx<SubCategoryItemModel> itemModel = SubCategoryItemModel().obs;
   Rxn<List<SubCategoryItemModel>> itemModelList =
       Rxn<List<SubCategoryItemModel>>([]);
@@ -43,8 +45,15 @@ class ServiceContoller extends GetxController {
   void change(String amount) => alredyAmount.value = int.parse(amount);
 
   void onReady() {
-    mainCatList.bindStream(todoStream());
+    if (auth.currentUser!.uid != null) {
+      mainCatList.bindStream(todoStream());
+    }
+
     super.onReady();
+  }
+
+  void getMyData() {
+    mainCatList.bindStream(todoStream());
   }
 
   _clearControllers() {
@@ -68,9 +77,9 @@ class ServiceContoller extends GetxController {
         .map((QuerySnapshot querysnapshot) {
       List<MainCategoryItemModel> _data = [];
       querysnapshot.docs.forEach((element) {
-        _data.add(MainCategoryItemModel.fromMap(element.data()));
+        _data.add(MainCategoryItemModel.fromMap(
+            element.data() as Map<String, dynamic>));
       });
-      print('Total message fetched: ${_data.length}');
       return _data;
       //
     });
@@ -81,21 +90,22 @@ class ServiceContoller extends GetxController {
           .where((item) => item.name == productName)
           .isNotEmpty;
 
-  bool _isItemAlreadySubAdded(String productName) =>
-      userController.userModel.value.cart!
-          .where((item) => item.productId == productName)
-          .isNotEmpty;
   void addToCategory(String catogory, File imageFile, String fileName) async {
     try {
+      String? downloadUrl;
+
       try {
         // Uploading the selected image with some custom meta data
-        await storage.ref().child('mainImage/$fileName').putFile(
-            imageFile,
-            SettableMetadata(customMetadata: {
-              'uploaded_by': 'main_cat',
-              'description': 'cat_image'
-            }));
-
+        TaskSnapshot data = await storage
+            .ref()
+            .child('mainImage/$fileName')
+            .putFile(
+                imageFile,
+                SettableMetadata(customMetadata: {
+                  'uploaded_by': 'main_cat',
+                  'description': 'cat_image'
+                }));
+        downloadUrl = await data.ref.getDownloadURL();
         // Refresh the UI
       } on FirebaseException catch (error) {
         print(error);
@@ -106,17 +116,83 @@ class ServiceContoller extends GetxController {
         "id": id,
         "name": catogory,
         "image": fileName,
+        "downloadUrl": downloadUrl,
         "expense": "0",
         "profite": "0",
         "losse": "0"
       }, id);
       Get.snackbar("Item added", "$catogory was added to your catogory");
       _clearControllers();
-      Get.to(HomeScreen());
+      Get.offAll(() => MainHomeHolder(currentIndex: 1));
     } catch (e) {
-      Get.snackbar("Error", "Cannot add this item");
+      Get.snackbar('Error'.tr, 'Cannot_add_item'.tr);
+    }
+  }
+
+  void upateprofile(File imageFile, String fileName, String oldfile) async {
+    try {
+      String? downloadUrl;
+
+      try {
+        // Uploading the selected image with some custom meta data
+        TaskSnapshot data =
+            await storage.ref().child('profileImage/$fileName').putFile(
+                imageFile,
+                SettableMetadata(customMetadata: {
+                  'uploaded_by': userController.userModel.value.id!,
+                  'description': 'profile_image'
+                }));
+        downloadUrl = await data.ref.getDownloadURL();
+        // Refresh the UI
+      } on FirebaseException catch (error) {
+        print(error);
+      }
+      firebaseFirestore.collection('users').doc(auth.currentUser!.uid).update(
+        {
+          'profile_image': downloadUrl,
+        },
+      ).then((_) {
+        serviceController.deleteImageFromDB(oldfile);
+        Get.snackbar("Upadated", "  Updated to Profile Image");
+      }).catchError((error) => print('Update failed: $error'));
+    } catch (e) {
+      Get.snackbar('Error'.tr, 'Cannot_add_item'.tr);
       debugPrint(e.toString());
     }
+  }
+
+  Future<String> uploadImage(File file, String path) async {
+    String? downloadUrl;
+
+    try {
+      // Uploading the selected image with some custom meta data
+      TaskSnapshot data = await storage.ref().child(path).putFile(
+          file,
+          SettableMetadata(customMetadata: {
+            'uploaded_by': userController.userModel.value.id!,
+            'description': 'path'
+          }));
+      downloadUrl = await data.ref.getDownloadURL();
+      // Refresh the UI
+    } on FirebaseException catch (error) {
+      print(error);
+    }
+
+    return downloadUrl!;
+  }
+
+  void updateName() {
+    userController.userModel.value.name = name.text;
+    firebaseFirestore.collection('users').doc(auth.currentUser!.uid).update(
+      {
+        'name': name.text,
+      },
+    ).then((_) {
+      Get.snackbar('Upadated'.tr, 'Updated_Profile_Name'.tr);
+      Get.offAll(() => MainHomeHolder(
+            currentIndex: 1,
+          ));
+    }).catchError((error) => print('Update failed: $error'));
   }
 
   void updateToCategory(MainCategoryItemModel data, String textName) {
@@ -132,24 +208,40 @@ class ServiceContoller extends GetxController {
         textName: sum.toString(),
       },
     ).then((_) {
+      var uuid = Uuid();
+      var paymentId = uuid.v1();
+      userController.updateUserPaymentSet({
+        'paymentId': paymentId,
+        'content': amountCondent.text,
+        'amount': amount.text,
+        'createdon': Timestamp.now(),
+        'status': true,
+      }, data.id!, paymentId);
+      Get.snackbar('Upadated'.tr, 'was_Updated_arm'.tr);
       amount.clear();
-      Get.offAll(() => MainHomeHolder());
+      amountCondent.clear();
+      Get.offAll(() => MainHomeHolder(
+            currentIndex: 1,
+          ));
     }).catchError((error) => print('Update failed: $error'));
   }
 
-  void deleteMainCategory(String documentId) {
+  void deleteMainCategory(MainCategoryItemModel category) {
     try {
       firebaseFirestore
           .collection('users')
           .doc(auth.currentUser!.uid)
           .collection('MainCategory')
-          .doc(documentId)
+          .doc(category.id)
           .delete();
-      Get.snackbar("Deleted", "Succfuly");
+      Get.snackbar("Deleted", "Successfuly");
+      deleteImageFromDB(category.downloadUrl!);
       _clearControllers();
-      Get.offAll(HomeScreen());
+      Get.offAll(MainHomeHolder(
+        currentIndex: 1,
+      ));
     } catch (e) {
-      Get.snackbar("Error", "Cannot add this item");
+      Get.snackbar('Error'.tr, "");
       debugPrint(e.toString());
     }
   }
@@ -177,7 +269,7 @@ class ServiceContoller extends GetxController {
   bool get hasNext => _hasNext;
   static const ITEMS = "items";
   List<SubCategoryItemModel> get items => _usersSnapshot.map((snap) {
-        final item = snap.data()![ITEMS] ?? [];
+        final item = (snap.data() as Map<String, dynamic>)[ITEMS];
 
         return SubCategoryItemModel(
           name: item['name'],
@@ -185,30 +277,27 @@ class ServiceContoller extends GetxController {
         );
       }).toList();
 
-  Future fetchNextItems(String id) async {
-    // if (_isFetchingUsers) return;
-
+  Future fetchNextItemWithId(String id) async {
     _errorMessage = '';
     _isFetchingUsers = true;
     itemModelList.bindStream(getitemList(id));
-    // try {
-    //   final snap = await FirebaseApi.getUsers(
-    //     id,
-    //     documentLimit,
-    //     startAfter: _usersSnapshot.isNotEmpty ? _usersSnapshot.last : null,
-    //   );
-    //   _usersSnapshot.addAll(snap.docs);
-
-    //   if (snap.docs.length < documentLimit) _hasNext = false;
-    //   update();
-    // } catch (error) {
-    //   _errorMessage = error.toString();
-    //   update();
-    // }
 
     _isFetchingUsers = false;
   }
 
+  TextEditingController editingController = TextEditingController();
+  Future fetchNextItemWitName(String id) async {
+    _errorMessage = '';
+    _isFetchingUsers = true;
+    itemModelList.bindStream(getitemList(id));
+
+    _isFetchingUsers = false;
+  }
+
+  Future<void> deleteImageFromDB(String imageUrl) async {
+    Reference photoRef = await FirebaseStorage.instance.refFromURL(imageUrl);
+    await photoRef.delete().then((value) {});
+  }
   // getitemlist(String id) {
   //   firebaseFirestore
   //       .collection(usersItemCollection)
@@ -237,7 +326,8 @@ class ServiceContoller extends GetxController {
         .map((QuerySnapshot querysnapshot) {
       List<SubCategoryItemModel> _data = [];
       querysnapshot.docs.forEach((element) {
-        _data.add(SubCategoryItemModel.fromMap(element.data()));
+        _data.add(SubCategoryItemModel.fromMap(
+            element.data() as Map<String, dynamic>));
       });
       print('Total message fetched: ${_data.length}');
       return _data;
@@ -245,18 +335,42 @@ class ServiceContoller extends GetxController {
     });
   }
 
+  // Stream<List<SubCategoryItemModel>> getSerchitemList(String id) {
+  //   return firebaseFirestore
+  //       .collection('users')
+  //       .doc(auth.currentUser!.uid)
+  //       .collection('MainCategory')
+  //       .doc(id)
+  //       .collection('items').where(field)
+  //       .snapshots()
+  //       .map((QuerySnapshot querysnapshot) {
+  //     List<SubCategoryItemModel> _data = [];
+  //     querysnapshot.docs.forEach((element) {
+  //       _data.add(SubCategoryItemModel.fromMap(
+  //           element.data() as Map<String, dynamic>));
+  //     });
+  //     print('Total message fetched: ${_data.length}');
+  //     return _data;
+  //     //
+  //   });
+  // }
+
   void addToItem(String parentId, File imageFile, String fileName) async {
     try {
+      String? downloadUrl;
+
       try {
         // Uploading the selected image with some custom meta data
-        await storage.ref().child('mainImage/$fileName').putFile(
+
+        TaskSnapshot data = await storage.ref().child('item/$fileName').putFile(
             imageFile,
             SettableMetadata(customMetadata: {
               'uploaded_by': 'item',
               'description': 'item_image'
             }));
-
+        print(data);
         // Refresh the UI
+        downloadUrl = await data.ref.getDownloadURL();
       } on FirebaseException catch (error) {
         print(error);
       }
@@ -273,17 +387,48 @@ class ServiceContoller extends GetxController {
         "item_main": itemMainCat.text,
         "item_sub": itemSubCat.text,
         "dis": dis.text,
-        "image": fileName,
+        "image": 'item/$fileName',
+        "downloadUrl": downloadUrl,
         "join_date": dateFormat
       }, parentId, itemId);
       Get.snackbar("Item added", " was added to your catogory");
       _clearAddCatControllers();
-      Get.offAll(HomeScreen());
+      Get.offAll(MainHomeHolder(
+        currentIndex: 1,
+      ));
       //   }
     } catch (e) {
       Get.snackbar("Error", "Cannot add this item");
       debugPrint(e.toString());
     }
+  }
+
+  void updateItem(String documentId, String id) {
+    firebaseFirestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .collection('MainCategory')
+        .doc(documentId)
+        .collection('items')
+        .doc(id)
+        .update(
+      {
+        'dis': updateDis.text,
+      },
+    ).then((_) {
+      Get.snackbar("Upadated", "  Updated to Profile Image");
+    }).catchError((error) => print('Update failed: $error'));
+  }
+
+  void deleteItem(String documentId, String id) {
+    firebaseFirestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .collection('MainCategory')
+        .doc(documentId)
+        .collection('items')
+        .doc(id)
+        .delete();
   }
 
   updateItemsUserData(Map<String, dynamic> data, String id) {
@@ -303,10 +448,23 @@ class ServiceContoller extends GetxController {
     return m!;
   }
 
+  Future<String> getImageUrl(BuildContext context, String image) async {
+    String? m;
+    await serviceController.loadFromStorage(context, image).then((downloadUrl) {
+      m = downloadUrl.toString();
+    });
+
+    return m!;
+  }
+
   Future<dynamic> loadFromStorage(BuildContext context, String image) async {
-    var url =
-        await FirebaseStorage.instance.ref().child(image).getDownloadURL();
-    return url;
+    try {
+      var url =
+          await FirebaseStorage.instance.ref().child(image).getDownloadURL();
+      return url;
+    } on Exception {
+      print("Oops! The file was not found");
+    }
   }
 }
 //mainImage/$image

@@ -1,15 +1,12 @@
 import 'dart:io';
-import 'package:farmapp/utils/helper/showLoading.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as path;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmapp/constants/controllers.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
 import 'package:farmapp/views/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_picture_uploader/firebase_picture_uploader.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 
@@ -82,6 +79,7 @@ class _AddMainCategorysState extends State<AddMainCategorys> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
         ListView(
@@ -92,7 +90,7 @@ class _AddMainCategorysState extends State<AddMainCategorys> {
             ),
             Center(
               child: CustomText(
-                text: "Add Farm ",
+                text: 'Add_Farm'.tr,
                 size: 24,
                 weight: FontWeight.bold,
               ),
@@ -102,10 +100,10 @@ class _AddMainCategorysState extends State<AddMainCategorys> {
             ),
             buildtextForm(
               controller: serviceController.categorName,
-              label: 'Category',
+              label: 'Name'.tr,
               validator: (val) {
                 if (val!.isEmpty) {
-                  return 'Enter category';
+                  return 'Enter_Name'.tr;
                 }
               },
             ),
@@ -116,13 +114,23 @@ class _AddMainCategorysState extends State<AddMainCategorys> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      shape: new RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(20.0),
+                      ),
+                    ),
                     onPressed: () => _upload('camera'),
                     icon: Icon(Icons.camera),
-                    label: Text('camera')),
+                    label: Text('Camera'.tr)),
                 ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      shape: new RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(20.0),
+                      ),
+                    ),
                     onPressed: () => _upload('gallery'),
                     icon: Icon(Icons.library_add),
-                    label: Text('Gallery')),
+                    label: Text('Gallery'.tr)),
               ],
             ),
             imageFile != null
@@ -131,11 +139,10 @@ class _AddMainCategorysState extends State<AddMainCategorys> {
                     height: 40.h,
                     child: Image.file(imageFile!, fit: BoxFit.fill),
                     decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(30)),
-                    ))
+                        borderRadius: new BorderRadius.circular(15)))
                 : Center(
                     child: CustomText(
-                      text: "Please select image",
+                      text: 'Please_select_image'.tr,
                       size: 14,
                       weight: FontWeight.bold,
                     ),
@@ -144,42 +151,36 @@ class _AddMainCategorysState extends State<AddMainCategorys> {
               height: 20,
             ),
             isLoading
-                ? button(
-                    label: 'SUBMIT ',
-                    height: 30,
-                    width: 20,
-                    onTap: () {
-                      if (imageFile != null) {
-                        // if (serviceController.isItemAlreadyAdded(
-                        //     serviceController.categorName.text)) {
-                        //   Get.snackbar(
-                        //       "Check your Category", " is already added");
-                        // } else {
-                        //   setState(() {
-                        //     isLoading = false;
-                        //   });
-                        showLoading();
-                        serviceController.addToCategory(
-                            serviceController.categorName.text,
-                            imageFile!,
-                            fileName!);
-                        //}
-                      } else {
-                        Get.snackbar("Please select Image", "");
-                      }
-                    },
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: button(
+                      label: 'SUBMIT'.tr,
+                      height: 30,
+                      width: 20,
+                      onTap: () {
+                        if (imageFile != null) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                          //  showLoading();
+                          serviceController.addToCategory(
+                              serviceController.categorName.text,
+                              imageFile!,
+                              fileName!);
+                        } else {
+                          Get.snackbar("Please_select_image".tr, "");
+                        }
+                      },
+                    ),
                   )
-                : Container()
+                : loadingButton(
+                    label: ' ',
+                    height: size.height * 0.07,
+                    width: size.width,
+                    onTap: () {},
+                  )
           ],
         ),
-        // Positioned(
-        //     bottom: 30,
-        //     child: Container(
-        //       width: MediaQuery.of(context).size.width,
-        //       padding: EdgeInsets.all(8),
-        //       child: Obx(() => CustomButton(
-        //           text: "Pay (\$${cartController.totalCartPrice.value.toStringAsFixed(2)})", onTap: () {}),)
-        //     ))
       ],
     );
   }

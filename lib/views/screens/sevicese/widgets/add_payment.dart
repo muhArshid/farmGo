@@ -1,23 +1,18 @@
 import 'dart:io';
 import 'package:farmapp/model/core/category_item.dart';
-import 'package:farmapp/utils/helper/showLoading.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
-import 'package:path/path.dart' as path;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farmapp/constants/controllers.dart';
 import 'package:farmapp/views/widgets/button_icons_widgets.dart';
 import 'package:farmapp/views/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_picture_uploader/firebase_picture_uploader.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:sizer/sizer.dart';
 
 class AddPayment extends StatefulWidget {
   final String? textName;
+  final String? passName;
   final MainCategoryItemModel? modal;
-  const AddPayment({Key? key, this.textName, this.modal}) : super(key: key);
+  const AddPayment({Key? key, this.textName, this.passName, this.modal})
+      : super(key: key);
   @override
   State<AddPayment> createState() => _AddPaymentState();
 }
@@ -41,7 +36,7 @@ class _AddPaymentState extends State<AddPayment> {
               ),
               Center(
                 child: CustomText(
-                  text: "Add ",
+                  text: "Add".tr,
                   size: 24,
                   weight: FontWeight.bold,
                 ),
@@ -55,7 +50,20 @@ class _AddPaymentState extends State<AddPayment> {
                 label: widget.textName.toString(),
                 validator: (val) {
                   if (val!.isEmpty) {
-                    return 'Enter amount';
+                    return 'Enter_amount'.tr;
+                  }
+                },
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              buildtextForm(
+                keyboardType: TextInputType.text,
+                controller: serviceController.amountCondent,
+                label: 'Description'.tr,
+                validator: (val) {
+                  if (val!.isEmpty) {
+                    return 'Enter_Description'.tr;
                   }
                 },
               ),
@@ -63,13 +71,13 @@ class _AddPaymentState extends State<AddPayment> {
                 height: 20,
               ),
               button(
-                label: 'SUBMIT ',
+                label: 'SUBMIT'.tr,
                 height: 30,
                 width: 20,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
                     serviceController.updateToCategory(
-                        widget.modal!, widget.textName!);
+                        widget.modal!, widget.passName!);
                   }
                 },
               )
